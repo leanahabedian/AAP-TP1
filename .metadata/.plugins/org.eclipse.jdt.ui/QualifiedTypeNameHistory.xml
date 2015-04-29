@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="dc.aap.SomeClass"/>
+<fullyQualifiedTypeName name="soot.jimple.internal.JNewExpr"/>
+<fullyQualifiedTypeName name="soot.jimple.internal.JimpleLocal"/>
+<fullyQualifiedTypeName name="soot.jimple.internal.JInstanceFieldRef"/>
+</qualifiedTypeNameHistroy>

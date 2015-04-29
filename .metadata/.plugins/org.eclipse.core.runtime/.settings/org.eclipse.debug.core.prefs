@@ -1,0 +1,2 @@
+eclipse.preferences.version=1
+prefWatchExpressions=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<watchExpressions>\n<expression enabled\="true" text\="s"/>\n<expression enabled\="true" text\="s.getDefBoxes().get(0)"/>\n<expression enabled\="true" text\="s.getUseBoxes().get(0)"/>\n</watchExpressions>\n

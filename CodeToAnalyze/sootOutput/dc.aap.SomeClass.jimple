@@ -1,0 +1,30 @@
+public class dc.aap.SomeClass extends java.lang.Object
+{
+    public java.lang.Integer h;
+
+    public static void entryPoint()
+    {
+        java.lang.Integer i, temp$0;
+        java.lang.Object j;
+        dc.aap.SomeClass k, temp$1;
+
+        temp$0 = new java.lang.Integer;
+        specialinvoke temp$0.<java.lang.Integer: void <init>(int)>(2);
+        i = temp$0;
+        j = i;
+        temp$1 = new dc.aap.SomeClass;
+        specialinvoke temp$1.<dc.aap.SomeClass: void <init>()>();
+        k = temp$1;
+        j = k;
+        return;
+    }
+
+    public void <init>()
+    {
+        dc.aap.SomeClass this;
+
+        this := @this: dc.aap.SomeClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+}

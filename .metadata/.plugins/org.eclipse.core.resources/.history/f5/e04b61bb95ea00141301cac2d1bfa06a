@@ -1,0 +1,77 @@
+package dc.aap;
+
+import soot.*;
+import soot.util.*;
+import java.util.*;
+import soot.jimple.*;
+import soot.toolkits.graph.*;
+import soot.toolkits.scalar.*;
+
+class PointsToGraphAnalysis extends ForwardFlowAnalysis
+{
+    protected void copy(Object src, Object dest)
+    {
+        FlowSet srcSet  = (FlowSet) src;
+        FlowSet destSet = (FlowSet) dest;
+            
+        srcSet.copy(destSet);
+    }
+
+    protected void merge(Object src1, Object src2, Object dest)
+    {
+        FlowSet srcSet1 = (FlowSet) src1;
+        FlowSet srcSet2 = (FlowSet) src2;
+        FlowSet destSet = (FlowSet) dest;
+
+        srcSet1.union(srcSet2, destSet);
+    }
+
+    protected void flowThrough(Object srcValue, Object unit,
+            Object destValue)
+    {
+        FlowSet dest = (FlowSet) destValue;
+        FlowSet src  = (FlowSet) srcValue;
+        Unit    s    = (Unit)    unit;
+        src.copy (dest);
+
+        // KILL
+        // Take out kill set
+        Iterator boxIt = s.getDefBoxes().iterator();
+        while (boxIt.hasNext()) {
+            ValueBox box = (ValueBox) boxIt.next();
+            Value value = box.getValue();
+            if (value instanceof Ref)
+                dest.remove(value);
+        }
+
+        // GEN
+        // Add gen set
+        ValueBox antecedente = s.getDefBoxes().get(0);
+        Value antecedenteValue = antecedente.getValue();
+        for (ValueBox box : s.getUseBoxes()) {
+            Value value = box.getValue();
+            if (value instanceof Local){
+            	
+            	Pair<Value,Value> pair = new Pair<Value,Value>(antecedenteValue,value);
+                dest.add(pair);
+            }
+        }
+    }
+
+    protected Object entryInitialFlow()
+    {
+        return new ArraySparseSet();
+    }
+        
+    protected Object newInitialFlow()
+    {
+        return new ArraySparseSet();
+    }
+
+    PointsToGraphAnalysis(DirectedGraph g)
+    {
+        super(g);
+
+        doAnalysis();
+    }
+}
