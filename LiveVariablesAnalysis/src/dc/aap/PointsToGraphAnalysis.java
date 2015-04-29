@@ -79,13 +79,41 @@ class PointsToGraphAnalysis extends ForwardFlowAnalysis
     			}
             	else if (rightValue instanceof JInstanceFieldRef) { // x = y.f
             		
+            		killRelation(dest, leftValue);
             	}
         		
         	} 
         	else if (leftValue instanceof JInstanceFieldRef) { // x.f = 
             	if (rightValue instanceof JimpleLocal) {//x.f = y
             		
-            		genRelation(dest, leftValue, rightValue);
+                	right = s.getUseBoxes().get(1);
+                	rightValue = right.getValue();
+            		String label = ((JInstanceFieldRef) leftValue).getFieldRef().name();
+            		Value owner = ((JInstanceFieldRef) leftValue).getBaseBox().getValue();
+            		
+            		for (Object relation : dest) {
+            			if(relation instanceof Tripla){
+            				Value first = ((Tripla<Value,String,Value>)relation).getFst();
+            				String second = ((Tripla<Value,String,Value>)relation).getSnd();
+            				
+                			if (owner.toString().equals(first.toString()) && label.equals(second)) {
+                				dest.remove(relation);
+                				break;
+                			}	
+            			}
+            			
+            		}
+            		
+            		for (Object relation : dest) {
+						Value first = ((Tupla<Value,Value>)relation).getFst(); 
+						if (rightValue.equals(first)) {
+							Tripla<Value,String,Value> tripla = new Tripla<Value, String, Value>(owner, label, ((Tupla<Value,Value>)relation).getSnd());
+		            		dest.add(tripla);
+		                	break;
+						}
+					}
+            		
+            		
     			}
         	}
         }
@@ -99,7 +127,7 @@ class PointsToGraphAnalysis extends ForwardFlowAnalysis
 	private void killRelation(FlowSet dest, Value leftValue) {
 		for (Object relation : dest) {
 			Value first = ((Tupla<Value,Value>)relation).getFst();
-			if (leftValue.equals(first)) {
+			if (leftValue.toString().equals(first.toString())) {
 				dest.remove(relation);
 				break;
 			}

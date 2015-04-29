@@ -1,0 +1,6 @@
+package dc.aap;
+
+public class Eje {
+
+	public abstract void toString();
+}

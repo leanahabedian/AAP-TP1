@@ -1,2 +1,4 @@
 1430326956971	Extract method 'killRelation'
 1430327023948	Extract method 'genRelation'
+1430332972826	Copy compilation unit
+1430333007401	Encapsulate field 'thr'

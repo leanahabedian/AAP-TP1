@@ -5,13 +5,14 @@ public class SomeClass {
 	public Integer h;
 
 	public static void entryPoint() {
-//		SomeClass ble = new SomeClass();
-		Integer i = new Integer(2);
-		Object j = i;
-		SomeClass k = new SomeClass();
-		j = k;
+		SomeClass ble = new SomeClass();
+		Object i = new String("2");
+		ble.h = new Integer(1);
 		
-//		ble.h = j;
+//		Object j = i;
+//		SomeClass k = new SomeClass();
+//		j = k;
+		i = ble.h;
 //		i = ble.h;
 		
 	}

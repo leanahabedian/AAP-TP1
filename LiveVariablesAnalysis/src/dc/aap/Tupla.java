@@ -1,6 +1,6 @@
 package dc.aap;
 
-public class Tupla<S1, S2> {
+public class Tupla<S1, S2> extends Eje {
 	
 	private S1 fst;
 	private S2 snd;

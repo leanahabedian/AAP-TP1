@@ -4,4 +4,5 @@
 <fullyQualifiedTypeName name="soot.jimple.internal.JNewExpr"/>
 <fullyQualifiedTypeName name="soot.jimple.internal.JimpleLocal"/>
 <fullyQualifiedTypeName name="soot.jimple.internal.JInstanceFieldRef"/>
+<fullyQualifiedTypeName name="dc.aap.Tripla"/>
 </qualifiedTypeNameHistroy>
