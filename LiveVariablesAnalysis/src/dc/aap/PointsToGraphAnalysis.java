@@ -5,6 +5,8 @@ import soot.util.*;
 
 import java.util.*;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 import soot.jimple.*;
 import soot.jimple.internal.JInstanceFieldRef;
 import soot.jimple.internal.JNewExpr;
@@ -77,9 +79,34 @@ class PointsToGraphAnalysis extends ForwardFlowAnalysis
 					}
             		
     			}
-            	else if (rightValue instanceof JInstanceFieldRef) { // x = y.f
+            	else if (rightValue instanceof JInstanceFieldRef) { // leftValue = owner.label
             		
             		killRelation(dest, leftValue);
+            		
+            		String label = ((JInstanceFieldRef) rightValue).getFieldRef().name();
+            		right = s.getUseBoxes().get(1);
+                	Value owner = right.getValue();
+
+            		// GEN
+            		for (Object relation : dest) {
+            			
+            			Eje eje = (Eje)relation;
+            			
+            			if (eje instanceof Tripla){
+            				
+            				Value first = ((Tripla<Value, String, Value>) eje).getFst(); 
+    						
+            				if (owner.equals(first) && label.equals(((Tripla<Value, String, Value>) eje).getSnd())) {
+    							
+            					Value to = ((Tripla<Value, String, Value>) eje).getThr();
+    							Tupla<Value,Value> tupla = new Tupla<Value, Value>(leftValue, to);
+    		            		dest.add(tupla);
+    		                	break;
+    						}
+            			}
+						
+					}
+            		
             	}
         		
         	} 
@@ -91,6 +118,7 @@ class PointsToGraphAnalysis extends ForwardFlowAnalysis
             		String label = ((JInstanceFieldRef) leftValue).getFieldRef().name();
             		Value owner = ((JInstanceFieldRef) leftValue).getBaseBox().getValue();
             		
+            		// KILLER
             		for (Object relation : dest) {
             			if(relation instanceof Tripla){
             				Value first = ((Tripla<Value,String,Value>)relation).getFst();
@@ -104,6 +132,7 @@ class PointsToGraphAnalysis extends ForwardFlowAnalysis
             			
             		}
             		
+            		// GEN
             		for (Object relation : dest) {
 						Value first = ((Tupla<Value,Value>)relation).getFst(); 
 						if (rightValue.equals(first)) {

@@ -4,16 +4,12 @@ public class SomeClass {
 	
 	public Integer h;
 
-	public static void entryPoint() {
-		SomeClass ble = new SomeClass();
-		Object i = new String("2");
-		ble.h = new Integer(1);
+	public static void easyMethod() {
 		
-//		Object j = i;
-//		SomeClass k = new SomeClass();
-//		j = k;
-		i = ble.h;
-//		i = ble.h;
+		SomeClass someClass = new SomeClass();
+		Object obj = new String("2");
+		someClass.h = new Integer(1);
+		obj = someClass.h;
 		
 	}
 	

@@ -24,7 +24,7 @@ public class StandaloneMain {
      	Options.v().setPhaseOption("jb" , "use-original-names:true");
 		SootClass c = Scene.v().loadClassAndSupport("dc.aap.SomeClass");		
 		c.setApplicationClass();
-		SootMethod m = c.getMethodByName("entryPoint");
+		SootMethod m = c.getMethodByName("easyMethod");
 		Scene.v().loadNecessaryClasses();
 		Body b = m.retrieveActiveBody();
 		UnitGraph g = new ExceptionalUnitGraph(b);
