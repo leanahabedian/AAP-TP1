@@ -11,6 +11,102 @@ public class SomeClass {
 		someClass.h = new Integer(1);
 		obj = someClass.h;
 		
+	} // Resultado esperado: {(someClass,dc.app.SomeClass_9),(obj,java.lang.Integer_11),(someclass,h,java.lang.Integer_11)}
+	
+	public static void ifMethodPisandoValor(boolean b) {
+		
+		Object x = new Integer(1);
+		if (b){
+			x = new SomeClass();
+		} else {
+			x = new Integer(1);
+		}
+		x = new String("a");
+		// Resultado esperado: {(x,java.lang.String_24)}, ya que  la última asignación pisa las dos asignaciones previas resultado del if.
+
+	}
+
+	public static void ifMethodAsignandoValor(boolean b) {
+		
+		Object x = new Integer(1);
+		if (b){
+			x = new SomeClass();
+		} else {
+			x = new Integer(1);
+		}
+		Object y = x;
+		// Resultado esperado: {(y,java.lang.Integer_35),(y,dc.aap.SomeClass_33),(x,java.lang.Integer_35),(x,dc.aap.SomeClass_33)}.
+
 	}
 	
+	public static void ifMethodAsignandoValor2(boolean b) {
+		
+		Integer x = new Integer(1);
+		if (b){
+			x = new Integer(0);
+		} else {
+			x = new Integer(1);
+		}
+		SomeClass y = new SomeClass();
+		y.h = x;
+		// Resultado esperado: {(dc.aap.SomeClass_50,h,java.lang.Integer_46),(dc.aap.SomeClass_50,h,java.lang.Integer_48),(x,java.lang.Integer_46),(x,java.lang.Integer_48),(y,dc.aap.SomeClass_50)}.
+
+	}
+	
+public static void ifMethodAsignandoValor3(boolean b) {
+		
+		Integer x = new Integer(1);
+		if (b){
+			x = new Integer(0);
+		} else {
+			x = new Integer(1);
+		}
+		SomeClass y = new SomeClass();
+		y.h = new Integer(1);
+		x = y.h;
+		// Resultado esperado: {(x,java.lang.Integer_65),(dc.aap.SomeClass_64,h,java.lang.Integer_65),(y,dc.aap.SomeClass_64)}.
+
+	}
+	
+	public static void ifMethodAsignandoValor4(boolean b) {
+		
+		Integer x = new Integer(1);
+		if (b){
+			x = new Integer(0);
+		} else {
+			x = new Integer(1);
+		}
+		
+		SomeClass y;
+		if (b) {
+			y = new SomeClass();	
+		} else {
+			y = new SomeClass();
+		}
+		y.h = x;
+		// Resultado esperado: {(x,java.lang.Integer_75),(x,java.lang.Integer_77),(y,dc.aap.SomeClass_82),(y,dc.aap.SomeClass_84),(dc.aap.SomeClass_82,h,java.lang.Integer_75), (dc.aap.SomeClass_82,h,java.lang.Integer_77), (dc.aap.SomeClass_84,h,java.lang.Integer_75), (dc.aap.SomeClass_84,h,java.lang.Integer_77)}.
+
+	}
+	
+	public static void loopMethod() {
+		int i=0;
+		Object a = new SomeClass();
+		while(i<10) {
+			a = new Integer(1);
+			i++;
+		}
+	} // Resultado esperado: {(a,dc.app.SomeClass_93),(a,java.lang.Integer_95)}
+
+	public static void weakUpdate() {
+		
+		SomeClass a = new SomeClass();
+		Integer b = new Integer(1);
+		a.h = new Integer(2);
+		SomeClass c = new SomeClass();
+		Integer d = new Integer(3);
+		c.h = d;
+		a = c;
+		Integer e = a.h;
+		
+	} // Resultado esperado: {(dc.aap.SomeClass_105,h,java.lang.Integer_106), (b,java.lang.Integer_103), (dc.aap.SomeClass_102,h,java.lang.Integer_104), (c,dc.aap.SomeClass_105), (d,java.lang.Integer_106), (a,dc.aap.SomeClass_105), (e,java.lang.Integer_106)} 
 }

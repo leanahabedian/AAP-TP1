@@ -11,6 +11,7 @@ import soot.jimple.*;
 import soot.jimple.internal.JInstanceFieldRef;
 import soot.jimple.internal.JNewExpr;
 import soot.jimple.internal.JimpleLocal;
+import soot.tagkit.Tag;
 import soot.toolkits.graph.*;
 import soot.toolkits.scalar.*;
 
@@ -40,20 +41,11 @@ class PointsToGraphAnalysis extends ForwardFlowAnalysis
         FlowSet src  = (FlowSet) srcValue;
         Unit    s    = (Unit)    unit;
         src.copy (dest);
-
-//        // KILL
-//        // Take out kill set
-//        Iterator boxIt = s.getDefBoxes().iterator();
-//        while (boxIt.hasNext()) {
-//            ValueBox box = (ValueBox) boxIt.next();
-//            Value value = box.getValue();
-//            if (value instanceof Local)
-//                dest.remove(value);
-//        }
+        
+        int lineNumber = getLineNumber(s);
 
         // GEN
         // Add gen set
-        int lineNumber = s.getJavaSourceStartLineNumber();
         if (s.getDefBoxes().size() > 0 && s.getUseBoxes().size() > 0){ // solo soportamos 1 solo uso por enunciado de TP
         	ValueBox left = s.getDefBoxes().get(0);
         	Value leftValue = left.getValue();
@@ -62,55 +54,52 @@ class PointsToGraphAnalysis extends ForwardFlowAnalysis
         	
         	if (leftValue instanceof JimpleLocal) { // x = ..
         		if (rightValue instanceof JNewExpr) { //x = new A()
-        			
+        			if (alreadyDefined(dest,leftValue,rightValue, lineNumber)) return;
         			killRelation(dest, leftValue);
-            		genRelation(dest, leftValue, rightValue);
+            		genRelation(dest, leftValue, rightValue.getType() + "_" + lineNumber);
     			}
             	else if (rightValue instanceof JimpleLocal) {//x = y
             		
+        			if (alreadyDefined(dest,leftValue,rightValue, lineNumber)) return;
+
             		killRelation(dest, leftValue);
             		
             		for (Object relation : dest) {
-						Value first = ((Tupla<Value,Value>)relation).getFst(); 
-						if (rightValue.equals(first)) {
-							genRelation(dest, leftValue, ((Tupla<Value,Value>)relation).getSnd());
-		                	break;
+						if (relation instanceof EjeVariable){
+							String origen = ((EjeVariable)relation).getOrigen().getNombre();
+							if (rightValue.toString().equals(origen)) {
+								genRelation(dest, leftValue, ((EjeVariable)relation).getDestino());
+							}
 						}
 					}
-            		
     			}
-            	else if (rightValue instanceof JInstanceFieldRef) { // leftValue = owner.label
+            	else if (rightValue instanceof JInstanceFieldRef) { // x = y.f
             		
             		killRelation(dest, leftValue);
             		
             		String label = ((JInstanceFieldRef) rightValue).getFieldRef().name();
             		right = s.getUseBoxes().get(1);
                 	Value owner = right.getValue();
-
+                	
             		// GEN
-            		for (Object relation : dest) {
-            			
-            			Eje eje = (Eje)relation;
-            			
-            			if (eje instanceof Tripla){
-            				
-            				Value first = ((Tripla<Value, String, Value>) eje).getFst(); 
-    						
-            				if (owner.equals(first) && label.equals(((Tripla<Value, String, Value>) eje).getSnd())) {
-    							
-            					Value to = ((Tripla<Value, String, Value>) eje).getThr();
-    							Tupla<Value,Value> tupla = new Tupla<Value, Value>(leftValue, to);
-    		            		dest.add(tupla);
-    		                	break;
-    						}
-            			}
-						
+                	for (Object relation : dest) {
+                		
+                		if (relation instanceof EjeVariable){
+                    		EjeVariable ejeVar = (EjeVariable)relation;
+                    		if (ejeVar.getOrigen().getNombre().equals(owner.toString())){
+                    			for (Object ejeNodo : dest) {
+									if (ejeNodo instanceof EjeNodo 
+											&& ((EjeNodo) ejeNodo).getOrigen().equals(ejeVar.getDestino())
+											&& ((EjeNodo) ejeNodo).getEtiqueta().equals(label)){
+										
+										genRelation(dest, leftValue, ((EjeNodo)ejeNodo).getDestino());
+									}
+								}
+                    		}
+                		}
 					}
-            		
             	}
-        		
-        	} 
-        	else if (leftValue instanceof JInstanceFieldRef) { // x.f = 
+        	} else if (leftValue instanceof JInstanceFieldRef) { // x.f = 
             	if (rightValue instanceof JimpleLocal) {//x.f = y
             		
                 	right = s.getUseBoxes().get(1);
@@ -118,47 +107,77 @@ class PointsToGraphAnalysis extends ForwardFlowAnalysis
             		String label = ((JInstanceFieldRef) leftValue).getFieldRef().name();
             		Value owner = ((JInstanceFieldRef) leftValue).getBaseBox().getValue();
             		
-            		// KILLER
-            		for (Object relation : dest) {
-            			if(relation instanceof Tripla){
-            				Value first = ((Tripla<Value,String,Value>)relation).getFst();
-            				String second = ((Tripla<Value,String,Value>)relation).getSnd();
-            				
-                			if (owner.toString().equals(first.toString()) && label.equals(second)) {
-                				dest.remove(relation);
-                				break;
-                			}	
-            			}
-            			
-            		}
+//            		// KILLER Diego dijo no kill
             		
             		// GEN
-            		for (Object relation : dest) {
-						Value first = ((Tupla<Value,Value>)relation).getFst(); 
-						if (rightValue.equals(first)) {
-							Tripla<Value,String,Value> tripla = new Tripla<Value, String, Value>(owner, label, ((Tupla<Value,Value>)relation).getSnd());
-		            		dest.add(tripla);
-		                	break;
+            		List<Nodo> ownerReferences = getReferencias(dest, owner);
+            		
+            		List<Nodo> rightReferences = getReferencias(dest, rightValue);
+            		
+            		for (Nodo origen : ownerReferences) {
+						for (Nodo destino : rightReferences) {
+							dest.add(new EjeNodo(origen, label, destino));
 						}
 					}
-            		
-            		
     			}
         	}
         }
+    
     }
 
-	private void genRelation(FlowSet dest, Value leftValue, Value rightValue) {
-		Tupla<Value,Value> pair = new Tupla<Value,Value>(leftValue,rightValue);
-		dest.add(pair);
+	private List<Nodo> getReferencias(FlowSet dest, Value owner) {
+		List<Nodo> references = new ArrayList<Nodo>();
+		for (Object relation : dest) {
+			if (relation instanceof EjeVariable && ((EjeVariable)relation).getOrigen().getNombre().equals(owner.toString())) {
+				references.add(((EjeVariable)relation).getDestino());
+			}
+		}
+		return references;
 	}
 
+	private boolean alreadyDefined(FlowSet dest, Value leftValue, Value rightValue, int lineNumber) {
+		
+		for (Object relation : dest) {
+			if (relation instanceof EjeVariable){
+				EjeVariable eje = (EjeVariable) relation;
+				String nombreNodo = rightValue.getType().toString()+ "_"+ lineNumber;
+				if (eje.getOrigen().getNombre().equals(leftValue.toString()) && eje.getDestino().getNombre().equals(nombreNodo)){
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	private int getLineNumber(Unit s) {
+		Stmt statement = (Stmt) s;
+        Tag tagLine = null;
+        int lineNumber = -1; 
+        if (statement.getTags().size() > 0) {
+        	tagLine = statement.getTags().get(0);
+        	lineNumber = tagLine.getValue()[1];
+        }
+		return lineNumber;
+	}
+
+	private void genRelation(FlowSet dest, Value leftValue, String rightValue) {
+		EjeVariable ejeVariable = new EjeVariable(new Variable(leftValue.toString()),new Nodo(rightValue.toString()));
+		dest.add(ejeVariable);
+	}
+	
+	private void genRelation(FlowSet dest, Value leftValue, Nodo destino) {
+		EjeVariable ejeVariable = new EjeVariable(new Variable(leftValue.toString()),destino);
+		dest.add(ejeVariable);
+	}
+	
 	private void killRelation(FlowSet dest, Value leftValue) {
 		for (Object relation : dest) {
-			Value first = ((Tupla<Value,Value>)relation).getFst();
-			if (leftValue.toString().equals(first.toString())) {
-				dest.remove(relation);
-				break;
+			if (relation instanceof EjeVariable){
+				String origen = ((EjeVariable)relation).getOrigen().getNombre();
+				if (leftValue.toString().equals(origen)) {
+					dest.remove(relation);
+				}
 			}
 		}
 	}
