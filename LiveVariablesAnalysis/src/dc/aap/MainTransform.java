@@ -33,7 +33,7 @@ public class MainTransform {
 				new Transform("jtp.myTransform", new BodyTransformer() {
 
 					protected void internalTransform(Body body, String phase, Map options) {
-						new PointsToGraphAnalysis(new ExceptionalUnitGraph(body));
+						new Ej1PointsToAnalysis(new ExceptionalUnitGraph(body));
 						// use G.v().out instead of System.out so that Soot can
 						// redirect this output to the Eclipse console
 						G.v().out.println(body.getMethod());

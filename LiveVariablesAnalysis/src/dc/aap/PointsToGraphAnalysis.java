@@ -13,53 +13,51 @@ import soot.tagkit.Tag;
 import soot.toolkits.graph.*;
 import soot.toolkits.scalar.*;
 
-public class PointsToGraphAnalysis extends ForwardFlowAnalysis
+public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL>
 {
-    protected void copy(Object src, Object dest)
+    @Override
+    protected void copy(PTL src, PTL dest)
     {
-        FlowSet srcSet  = (FlowSet) src;
-        FlowSet destSet = (FlowSet) dest;
-
-        srcSet.copy(destSet);
+        src.getE().copy(dest.getE());
+        src.getL().copy(dest.getL());
+        src.getR().copy(dest.getR());
+        src.getW().copy(dest.getW());
     }
 
-    protected void merge(Object src1, Object src2, Object dest)
+    @Override
+    protected void merge(PTL src1, PTL src2, PTL dest)
     {
-        FlowSet srcSet1 = (FlowSet) src1;
-        FlowSet srcSet2 = (FlowSet) src2;
-        FlowSet destSet = (FlowSet) dest;
 
-        srcSet1.union(srcSet2, destSet);
+        src1.getE().union(src2.getE(),dest.getE());
+        src1.getL().union(src2.getL(),dest.getL());
     }
 
-    protected void flowThrough(Object srcValue, Object unit,
-                               Object destValue)
+    @Override
+    protected void flowThrough(PTL src, Unit unit,
+                               PTL dest)
     {
-        FlowSet dest = (FlowSet) destValue;
-        FlowSet src  = (FlowSet) srcValue;
-        Unit    s    = (Unit)    unit;
-        src.copy (dest);
+        copy(src,dest);
 
-        int lineNumber = getLineNumber(s);
+        int lineNumber = getLineNumber(unit);
 
         // GEN
         // Add gen set
-        if (isAssign(s)){ // solo soportamos 1 solo uso por enunciado de TP
-            ValueBox left = s.getDefBoxes().get(0);
+        if (isAssign(unit)){ // solo soportamos 1 solo uso por enunciado de TP
+            ValueBox left = unit.getDefBoxes().get(0);
             Value leftValue = left.getValue();
-            ValueBox right = s.getUseBoxes().get(0);
+            ValueBox right = unit.getUseBoxes().get(0);
             Value rightValue = right.getValue();
 
             if (isLocal(leftValue)) { // x = ..
-                handleLocal(dest, s, lineNumber, leftValue, rightValue);
+                handleLocal(dest, unit, lineNumber, leftValue, rightValue);
             } else if (isFieldRef(leftValue)) { // x.f =
-                handleFieldRef(dest, s, (JInstanceFieldRef) leftValue, rightValue);
+                handleFieldRef(dest, unit, (JInstanceFieldRef) leftValue, rightValue);
             }
         }
 
     }
 
-    private void handleFieldRef(FlowSet dest, Unit s, JInstanceFieldRef leftValue, Value rightValue) {
+    private void handleFieldRef(PTL dest, Unit s, JInstanceFieldRef leftValue, Value rightValue) {
         ValueBox right;
         if (isLocal(rightValue)) {//x.f = y
 
@@ -70,13 +68,13 @@ public class PointsToGraphAnalysis extends ForwardFlowAnalysis
             // KILL es opcional (Diego)
 
             // GEN
-            List<Nodo> ownerReferences = getReferencias(dest, owner,getL(dest));
+            List<Nodo> ownerReferences = getReferencias(owner,dest.getL());
 
-            List<Nodo> rightReferences = getReferencias(dest, rightValue,getL(dest));
+            List<Nodo> rightReferences = getReferencias(rightValue,dest.getL());
 
             for (Nodo origen : ownerReferences) {
                 for (Nodo destino : rightReferences) {
-                    dest.add(new EjeNodo(origen, label, destino));
+                    dest.getE().add(new EjeNodo(origen, label, destino));
                 }
             }
         }
@@ -86,56 +84,55 @@ public class PointsToGraphAnalysis extends ForwardFlowAnalysis
         return leftValue instanceof JInstanceFieldRef;
     }
 
-    private void handleLocal(FlowSet dest, Unit s, int lineNumber, Value leftValue, Value rightValue) {
+    private void handleLocal(PTL dest, Unit s, int lineNumber, Value leftValue, Value rightValue) {
         ValueBox right;
         if (isNewExpression(rightValue)) { //x = new A()
-            if (alreadyDefined(dest,leftValue,rightValue, lineNumber,getL(dest))) return;
-            killRelation(dest, leftValue,getL(dest));
-            genRelation(dest, leftValue, rightValue.getType() + "_" + lineNumber);
+            if (alreadyDefined(leftValue,rightValue, lineNumber,dest.getL())) return;
+            killRelation(leftValue,dest.getL());
+            genRelation(dest.getL(), leftValue, rightValue.getType() + "_" + lineNumber);
         }
         else if (isLocal(rightValue)) {//x = y
 
-            if (alreadyDefined(dest,leftValue,rightValue, lineNumber,getL(dest))) return;
+            if (alreadyDefined(leftValue,rightValue, lineNumber,dest.getL())) return;
 
-            killRelation(dest, leftValue,getL(dest));
+            killRelation(leftValue,dest.getL());
 
-            for (EjeVariable l: getL(dest)) {
+            for (EjeVariable l: dest.getL()) {
                 String origen = l.getOrigen().getNombre();
                 if (rightValue.toString().equals(origen)) {
-                    genRelation(dest, leftValue, l.getDestino());
+                    genRelation(dest.getL(), leftValue, l.getDestino());
                 }
             }
         }
         else if (isFieldRef(rightValue)) { // x = y.f
 
-            killRelation(dest, leftValue,getL(dest));
+            killRelation(leftValue,dest.getL());
 
             String label = ((JInstanceFieldRef) rightValue).getFieldRef().name();
             right = s.getUseBoxes().get(1);
             Value owner = right.getValue();
 
             // GEN
-            for (EjeVariable l: getL(dest)) {
+            for (EjeVariable l: dest.getL()) {
                 if (l.getOrigen().getNombre().equals(owner.toString())) {
-                    for (EjeNodo e : getE(dest)) {
+                    for (EjeNodo e : dest.getE()) { // quizas haya que ver tambien dest.getR() aca.
                         if (e.getOrigen().equals(l.getDestino())
                                 && e.getEtiqueta().equals(label)) {
-                            genRelation(dest, leftValue, e.getDestino());
+                            genRelation(dest.getL(), leftValue, e.getDestino());
                         }
                     }
-                    if (l.getDestino().getNombre().startsWith("param-")) { // load from parameter, new node needed for the label
-                        Nodo fresh = new Nodo(l.getDestino().getNombre() + "." + label);
-                        genRelation(dest, leftValue, fresh);
-                        dest.add(new EjeNodo(l.getDestino(), label, fresh));
-                    }
+                    handleParameterFresh(dest, leftValue, label, l);
                 }
             }
         }
         else if (isParameterDefinition(rightValue)){
-            ParameterRef param = (ParameterRef) rightValue;
-            genRelation(dest, leftValue, new Nodo("param-" + param.getType().toString() + param.getIndex()));
+            handleParameterDefinition(dest, leftValue, (ParameterRef) rightValue);
         }
     }
+
+    protected abstract void handleParameterDefinition(PTL dest, Value leftValue, ParameterRef rightValue);
+
+    protected abstract void handleParameterFresh(PTL dest, Value leftValue, String label, EjeVariable l);
 
     private boolean isParameterDefinition(Value v) {
         return v instanceof ParameterRef;
@@ -174,7 +171,7 @@ public class PointsToGraphAnalysis extends ForwardFlowAnalysis
         return s.getDefBoxes().size() > 0 && s.getUseBoxes().size() > 0;
     }
 
-    private List<Nodo> getReferencias(FlowSet dest, Value owner,List<EjeVariable>L) {
+    private List<Nodo> getReferencias(Value owner,FlowSet<EjeVariable>L) {
         List<Nodo> references = new ArrayList<Nodo>();
         for (EjeVariable l: L) {
             if (l.getOrigen().getNombre().equals(owner.toString())) {
@@ -184,7 +181,7 @@ public class PointsToGraphAnalysis extends ForwardFlowAnalysis
         return references;
     }
 
-    private boolean alreadyDefined(FlowSet dest, Value leftValue, Value rightValue, int lineNumber,List<EjeVariable> L) {
+    private boolean alreadyDefined(Value leftValue, Value rightValue, int lineNumber,FlowSet<EjeVariable> L) {
 
         for (EjeVariable l: L) {
             String nombreNodo = rightValue.getType().toString()+ "_"+ lineNumber;
@@ -211,28 +208,30 @@ public class PointsToGraphAnalysis extends ForwardFlowAnalysis
         dest.add(ejeVariable);
     }
 
-    private void genRelation(FlowSet dest, Value leftValue, Nodo destino) {
+    protected void genRelation(FlowSet dest, Value leftValue, Nodo destino) {
         EjeVariable ejeVariable = new EjeVariable(new Variable(leftValue.toString()),destino);
         dest.add(ejeVariable);
     }
 
-    private void killRelation(FlowSet dest, Value leftValue,List<EjeVariable> L) {
+    private void killRelation(Value leftValue,FlowSet<EjeVariable> L) {
         for (EjeVariable l : L){
             String origen = l.getOrigen().getNombre();
             if (leftValue.toString().equals(origen)) {
-                dest.remove(l);
+                L.remove(l);
             }
         }
     }
 
-    protected Object entryInitialFlow()
+    @Override
+    protected PTL entryInitialFlow()
     {
-        return new ArraySparseSet();
+        return new PTL();
     }
 
-    protected Object newInitialFlow()
+    @Override
+    protected PTL newInitialFlow()
     {
-        return new ArraySparseSet();
+        return new PTL();
     }
 
     public PointsToGraphAnalysis(DirectedGraph g)

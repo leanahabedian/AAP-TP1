@@ -17,7 +17,7 @@ public class StandaloneMain {
 	public static void main(String[] args) {
         SootEnvironment sootEnvironment = new SootEnvironment("dc.aap.SomeClass");
         UnitGraph weakUpdate = sootEnvironment.getUnitGraph("parameterLoad");
-        PointsToGraphAnalysis an = new PointsToGraphAnalysis(weakUpdate);
+        PointsToGraphAnalysis an = new Ej2PointsToAnalysis(weakUpdate);
 		for (Unit unit : weakUpdate) {
 		  FlowSet in = (FlowSet) an.getFlowBefore(unit);
 		  FlowSet out = (FlowSet) an.getFlowAfter(unit);
