@@ -15,37 +15,17 @@ import soot.toolkits.scalar.FlowSet;
 public class StandaloneMain {
 
 	public static void main(String[] args) {
-		// Cambiar este classpath por el correspondiente a su entorno.
-		// la manera más fácil es correr un análisis de Soot que ya existe, y copiar el classpath de la consola de soot
-		// Además hay que agregar a mano los paths del proyecto que quieren analizar ("CodeToAnalyze" del classpath de ejemplo)  
-		String cp = "/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunjce_provider.jar:/CodeToAnalyze/src:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/charsets.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/localedata.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/resources.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/zipfs.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jsse.jar:/home/lnahabedian/Desktop/workspace/CodeToAnalyze/bin/:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/java-atk-wrapper.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/dnsns.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunpkcs11.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rhino.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/icedtea-sound.jar::/home/lnahabedian/Desktop/workspace/CodeToAnalyze/src:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/resources.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jsse.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/charsets.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rhino.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/dnsns.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/icedtea-sound.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/java-atk-wrapper.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunjce_provider.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/zipfs.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunpkcs11.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/localedata.jar"; 				
-     	Scene.v().setSootClassPath(cp);
-     	Options.v().set_keep_line_number(true);
-     	Options.v().setPhaseOption("jb" , "use-original-names:true");
-		SootClass c = Scene.v().loadClassAndSupport("dc.aap.SomeClass");		
-		c.setApplicationClass();
-//		SootMethod m = c.getMethodByName("easyMethod");
-//		SootMethod m = c.getMethodByName("ifMethodPisandoValor");
-//		SootMethod m = c.getMethodByName("ifMethodAsignandoValor");
-//		SootMethod m = c.getMethodByName("ifMethodAsignandoValor2");
-//		SootMethod m = c.getMethodByName("ifMethodAsignandoValor3");
-//		SootMethod m = c.getMethodByName("ifMethodAsignandoValor4");
-//		SootMethod m = c.getMethodByName("loopMethod");
-		SootMethod m = c.getMethodByName("weakUpdate");
-		Scene.v().loadNecessaryClasses();
-		Body b = m.retrieveActiveBody();
-		UnitGraph g = new ExceptionalUnitGraph(b);
-//		System.out.println(g.toString());
-		PointsToGraphAnalysis an = new PointsToGraphAnalysis(g);
-		for (Unit unit : g) {
+        SootEnvironment sootEnvironment = new SootEnvironment("dc.aap.SomeClass");
+        UnitGraph weakUpdate = sootEnvironment.getUnitGraph("parameterLoad");
+        PointsToGraphAnalysis an = new PointsToGraphAnalysis(weakUpdate);
+		for (Unit unit : weakUpdate) {
 		  FlowSet in = (FlowSet) an.getFlowBefore(unit);
 		  FlowSet out = (FlowSet) an.getFlowAfter(unit);
-		  if (unit instanceof JAssignStmt){
-			  System.out.println("in: " + in.toString());
-			  System.out.println("code: " + unit.toString());
-			  System.out.println("out: "+ out.toString());
-		  }
-		  
+		  if (unit instanceof JAssignStmt) {
+              System.out.println("in: " + in.toString());
+              System.out.println("code: " + unit.toString());
+              System.out.println("out: " + out.toString());
+          }
 		}
 	}	
 }

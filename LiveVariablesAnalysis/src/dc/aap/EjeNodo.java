@@ -43,6 +43,27 @@ public class EjeNodo{
 		this.destino = destino;
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EjeNodo ejeNodo = (EjeNodo) o;
+
+        if (!destino.equals(ejeNodo.destino)) return false;
+        if (!etiqueta.equals(ejeNodo.etiqueta)) return false;
+        if (!origen.equals(ejeNodo.origen)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = origen.hashCode();
+        result = 31 * result + etiqueta.hashCode();
+        result = 31 * result + destino.hashCode();
+        return result;
+    }
 }
 
 

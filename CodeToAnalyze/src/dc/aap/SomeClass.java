@@ -109,4 +109,36 @@ public static void ifMethodAsignandoValor3(boolean b) {
 		Integer e = a.h;
 		
 	} // Resultado esperado: {(dc.aap.SomeClass_105,h,java.lang.Integer_106), (b,java.lang.Integer_103), (dc.aap.SomeClass_102,h,java.lang.Integer_104), (c,dc.aap.SomeClass_105), (d,java.lang.Integer_106), (a,dc.aap.SomeClass_105), (e,java.lang.Integer_106)} 
+
+    public static void doubleNew() {
+        SomeClass a = new SomeClass();
+        a = new SomeClass();
+    }
+
+    public static void doubleRead() {
+        SomeClass a = new SomeClass();
+        a.h = new Integer(0);
+        SomeClass b = new SomeClass();
+        b.h = new Integer(1);
+        Integer x = a.h;
+        x = b.h;
+    }
+
+    public void parameter(boolean b,Integer i) {
+        i = new Integer(10);
+    }
+
+    public void parameterRead(SomeClass a) {
+        Integer i = a.h;
+    }
+
+    public void parameterLoad(SomeClass a) {
+        Integer i = new Integer(0);
+        a.h = i;
+    }
+
+    public void parameterRef(SomeClass a) {
+        a = new SomeClass();
+    }
+
 }

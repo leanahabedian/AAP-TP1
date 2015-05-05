@@ -33,6 +33,25 @@ public class EjeVariable {
 		return "("+ origen + "," + destino + ")";
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EjeVariable that = (EjeVariable) o;
+
+        if (!destino.equals(that.destino)) return false;
+        if (!origen.equals(that.origen)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = origen.hashCode();
+        result = 31 * result + destino.hashCode();
+        return result;
+    }
 }
 
 
