@@ -30,5 +30,4 @@ public class SootEnvironment {
         Body b = m.retrieveActiveBody();
         return new ExceptionalUnitGraph(b);
     }
-
 }

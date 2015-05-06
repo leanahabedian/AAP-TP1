@@ -54,8 +54,56 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
                 handleFieldRef(dest, unit, (JInstanceFieldRef) leftValue, rightValue);
             }
         }
+        if (isMethodCall(unit)){
+            dispatchMethodCall(dest, ((InvokeStmt) unit).getInvokeExpr());
+        }
 
     }
+
+    private Nodo dispatchMethodCall(PTL dest, InvokeExpr invokeExpr) {
+        if (invokeExpr instanceof VirtualInvokeExpr) {
+            return handleMethodCall(dest,(VirtualInvokeExpr) invokeExpr);
+        }
+
+        if (invokeExpr instanceof InterfaceInvokeExpr) {
+            return handleMethodCall(dest,(InterfaceInvokeExpr) invokeExpr);
+        }
+
+        if (invokeExpr instanceof StaticInvokeExpr) {
+            return handleMethodCall(dest,(StaticInvokeExpr) invokeExpr);
+        }
+
+        if (invokeExpr instanceof SpecialInvokeExpr) {
+            return null; //TODO
+        }
+
+        throw new RuntimeException("InvokeExpr not supported " + invokeExpr.toString());
+    }
+
+    public boolean handleCalls() {
+        return false;
+    }
+
+    protected Nodo handleMethodCall(PTL dest, VirtualInvokeExpr invokeExpr) {
+        return null;
+    }
+
+    protected Nodo handleMethodCall(PTL dest, InterfaceInvokeExpr invokeExpr) {
+        return null;
+    }
+
+    protected Nodo handleMethodCall(PTL dest, StaticInvokeExpr invokeExpr) {
+        return null;
+    }
+
+    private boolean isMethodCall(Unit unit) {
+        return unit instanceof InvokeStmt && handleCalls();
+    }
+
+    protected boolean isMethodCall(Value rightValue){
+        return rightValue instanceof InvokeExpr && handleCalls();
+    }
+
 
     private void handleFieldRef(PTL dest, Unit s, JInstanceFieldRef leftValue, Value rightValue) {
         ValueBox right;
@@ -68,9 +116,9 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
             // KILL es opcional (Diego)
 
             // GEN
-            List<Nodo> ownerReferences = getReferencias(owner,dest.getL());
+            List<Nodo> ownerReferences = dest.getReferencias(owner);
 
-            List<Nodo> rightReferences = getReferencias(rightValue,dest.getL());
+            List<Nodo> rightReferences = dest.getReferencias(rightValue);
 
             for (Nodo origen : ownerReferences) {
                 for (Nodo destino : rightReferences) {
@@ -88,25 +136,25 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
         ValueBox right;
         if (isNewExpression(rightValue)) { //x = new A()
             if (alreadyDefined(leftValue,rightValue, lineNumber,dest.getL())) return;
-            killRelation(leftValue,dest.getL());
-            genRelation(dest.getL(), leftValue, rightValue.getType() + "_" + lineNumber);
+            dest.killRelation(leftValue);
+            dest.genRelation(leftValue, new Nodo(rightValue.getType().toString(),lineNumber));
         }
         else if (isLocal(rightValue)) {//x = y
 
             if (alreadyDefined(leftValue,rightValue, lineNumber,dest.getL())) return;
 
-            killRelation(leftValue,dest.getL());
+            dest.killRelation(leftValue);
 
             for (EjeVariable l: dest.getL()) {
                 String origen = l.getOrigen().getNombre();
                 if (rightValue.toString().equals(origen)) {
-                    genRelation(dest.getL(), leftValue, l.getDestino());
+                    dest.genRelation(leftValue, l.getDestino());
                 }
             }
         }
         else if (isFieldRef(rightValue)) { // x = y.f
 
-            killRelation(leftValue,dest.getL());
+            dest.killRelation(leftValue);
 
             String label = ((JInstanceFieldRef) rightValue).getFieldRef().name();
             right = s.getUseBoxes().get(1);
@@ -118,7 +166,7 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
                     for (EjeNodo e : dest.getE()) { // quizas haya que ver tambien dest.getR() aca.
                         if (e.getOrigen().equals(l.getDestino())
                                 && e.getEtiqueta().equals(label)) {
-                            genRelation(dest.getL(), leftValue, e.getDestino());
+                            dest.genRelation(leftValue, e.getDestino());
                         }
                     }
                     handleParameterFresh(dest, leftValue, label, l);
@@ -128,7 +176,13 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
         else if (isParameterDefinition(rightValue)){
             handleParameterDefinition(dest, leftValue, (ParameterRef) rightValue);
         }
+        else if (isMethodCall(rightValue)){
+            Nodo e = dispatchMethodCall(dest, (InvokeExpr) rightValue);
+            dest.killRelation(leftValue);
+            dest.genRelation(leftValue,e);
+        }
     }
+
 
     protected abstract void handleParameterDefinition(PTL dest, Value leftValue, ParameterRef rightValue);
 
@@ -142,27 +196,6 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
         return rightValue instanceof JNewExpr;
     }
 
-    private List<EjeNodo> getE(FlowSet dest) {
-        List<EjeNodo> l = new ArrayList<>();
-        for (Object vertex : dest) {
-            if (vertex instanceof EjeNodo) {
-                l.add((EjeNodo) vertex);
-            }
-        }
-        return l;
-
-    }
-
-    private List<EjeVariable> getL(FlowSet dest) {
-        List<EjeVariable> l = new ArrayList<>();
-        for (Object vertex : dest) {
-            if (vertex instanceof EjeVariable) {
-                l.add((EjeVariable) vertex);
-            }
-        }
-        return l;
-    }
-
     private boolean isLocal(Value leftValue) {
         return leftValue instanceof JimpleLocal;
     }
@@ -171,21 +204,13 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
         return s.getDefBoxes().size() > 0 && s.getUseBoxes().size() > 0;
     }
 
-    private List<Nodo> getReferencias(Value owner,FlowSet<EjeVariable>L) {
-        List<Nodo> references = new ArrayList<Nodo>();
-        for (EjeVariable l: L) {
-            if (l.getOrigen().getNombre().equals(owner.toString())) {
-                references.add(l.getDestino());
-            }
-        }
-        return references;
-    }
+
 
     private boolean alreadyDefined(Value leftValue, Value rightValue, int lineNumber,FlowSet<EjeVariable> L) {
 
         for (EjeVariable l: L) {
             String nombreNodo = rightValue.getType().toString()+ "_"+ lineNumber;
-            if (l.getOrigen().getNombre().equals(leftValue.toString()) && l.getDestino().getNombre().equals(nombreNodo)){
+            if (l.getOrigen().getNombre().equals(leftValue.toString()) && l.getDestino().getClassName().equals(nombreNodo)){
                 return true;
             }
         }
@@ -203,29 +228,16 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
         return lineNumber;
     }
 
-    private void genRelation(FlowSet dest, Value leftValue, String rightValue) {
-        EjeVariable ejeVariable = new EjeVariable(new Variable(leftValue.toString()),new Nodo(rightValue));
-        dest.add(ejeVariable);
-    }
 
-    protected void genRelation(FlowSet dest, Value leftValue, Nodo destino) {
-        EjeVariable ejeVariable = new EjeVariable(new Variable(leftValue.toString()),destino);
-        dest.add(ejeVariable);
-    }
 
-    private void killRelation(Value leftValue,FlowSet<EjeVariable> L) {
-        for (EjeVariable l : L){
-            String origen = l.getOrigen().getNombre();
-            if (leftValue.toString().equals(origen)) {
-                L.remove(l);
-            }
-        }
-    }
+
+
+    private PTL initial = new PTL();
 
     @Override
     protected PTL entryInitialFlow()
     {
-        return new PTL();
+        return initial;
     }
 
     @Override
@@ -237,7 +249,14 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
     public PointsToGraphAnalysis(DirectedGraph g)
     {
         super(g);
-
         doAnalysis();
     }
+
+    public PointsToGraphAnalysis(DirectedGraph g, PTL initial)
+    {
+        super(g);
+        this.initial = initial;
+        doAnalysis();
+    }
+
 }

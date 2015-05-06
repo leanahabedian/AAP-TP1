@@ -22,27 +22,27 @@ public class Ej2PointsToAnalysisTests extends TestCase {
 
     @Test
     public void testifMethodPisandoValor(){
-        verify("ifMethodPisandoValor","L:{(b,param-boolean0), (temp$0,java.lang.Integer_18), (temp$1,dc.aap.SomeClass_20), (temp$3,java.lang.String_24), (temp$2,java.lang.Integer_22), (x,java.lang.String_24)}E:{}R:{}");
+        verify("ifMethodPisandoValor","L:{(b,param_boolean_0), (temp$0,java.lang.Integer_18), (temp$1,dc.aap.SomeClass_20), (temp$3,java.lang.String_24), (temp$2,java.lang.Integer_22), (x,java.lang.String_24)}E:{}R:{}");
     }
 
     @Test
     public void testifMethodAsignandoValor(){
-        verify("ifMethodAsignandoValor","L:{(b,param-boolean0), (temp$0,java.lang.Integer_31), (temp$1,dc.aap.SomeClass_33), (x,dc.aap.SomeClass_33), (temp$2,java.lang.Integer_35), (x,java.lang.Integer_35), (y,dc.aap.SomeClass_33), (y,java.lang.Integer_35)}E:{}R:{}");
+        verify("ifMethodAsignandoValor","L:{(b,param_boolean_0), (temp$0,java.lang.Integer_31), (temp$1,dc.aap.SomeClass_33), (x,dc.aap.SomeClass_33), (temp$2,java.lang.Integer_35), (x,java.lang.Integer_35), (y,dc.aap.SomeClass_33), (y,java.lang.Integer_35)}E:{}R:{}");
     }
 
     @Test
     public void testifMethodAsignandoValor2(){
-        verify("ifMethodAsignandoValor2","L:{(b,param-boolean0), (temp$0,java.lang.Integer_44), (temp$1,java.lang.Integer_46), (x,java.lang.Integer_46), (temp$2,java.lang.Integer_48), (x,java.lang.Integer_48), (temp$3,dc.aap.SomeClass_50), (y,dc.aap.SomeClass_50)}E:{(dc.aap.SomeClass_50,h,java.lang.Integer_46), (dc.aap.SomeClass_50,h,java.lang.Integer_48)}R:{}");
+        verify("ifMethodAsignandoValor2","L:{(b,param_boolean_0), (temp$0,java.lang.Integer_44), (temp$1,java.lang.Integer_46), (x,java.lang.Integer_46), (temp$2,java.lang.Integer_48), (x,java.lang.Integer_48), (temp$3,dc.aap.SomeClass_50), (y,dc.aap.SomeClass_50)}E:{(dc.aap.SomeClass_50,h,java.lang.Integer_46), (dc.aap.SomeClass_50,h,java.lang.Integer_48)}R:{}");
     }
 
     @Test
     public void testifMethodAsignandoValor3() {
-        verify("ifMethodAsignandoValor3", "L:{(b,param-boolean0), (temp$0,java.lang.Integer_58), (temp$1,java.lang.Integer_60), (temp$5,java.lang.Integer_65), (temp$2,java.lang.Integer_62), (temp$4,java.lang.Integer_65), (temp$3,dc.aap.SomeClass_64), (y,dc.aap.SomeClass_64), (x,java.lang.Integer_65)}E:{(dc.aap.SomeClass_64,h,java.lang.Integer_65)}R:{}");
+        verify("ifMethodAsignandoValor3", "L:{(b,param_boolean_0), (temp$0,java.lang.Integer_58), (temp$1,java.lang.Integer_60), (temp$5,java.lang.Integer_65), (temp$2,java.lang.Integer_62), (temp$4,java.lang.Integer_65), (temp$3,dc.aap.SomeClass_64), (y,dc.aap.SomeClass_64), (x,java.lang.Integer_65)}E:{(dc.aap.SomeClass_64,h,java.lang.Integer_65)}R:{}");
     }
 
     @Test
     public void testifMethodAsignandoValor4() {
-        verify("ifMethodAsignandoValor4", "L:{(b,param-boolean0), (temp$0,java.lang.Integer_73), (temp$1,java.lang.Integer_75), (x,java.lang.Integer_75), (temp$2,java.lang.Integer_77), (x,java.lang.Integer_77), (temp$3,dc.aap.SomeClass_82), (y,dc.aap.SomeClass_82), (temp$4,dc.aap.SomeClass_84), (y,dc.aap.SomeClass_84)}E:{(dc.aap.SomeClass_82,h,java.lang.Integer_75), (dc.aap.SomeClass_82,h,java.lang.Integer_77), (dc.aap.SomeClass_84,h,java.lang.Integer_75), (dc.aap.SomeClass_84,h,java.lang.Integer_77)}R:{}");
+        verify("ifMethodAsignandoValor4", "L:{(b,param_boolean_0), (temp$0,java.lang.Integer_73), (temp$1,java.lang.Integer_75), (x,java.lang.Integer_75), (temp$2,java.lang.Integer_77), (x,java.lang.Integer_77), (temp$3,dc.aap.SomeClass_82), (y,dc.aap.SomeClass_82), (temp$4,dc.aap.SomeClass_84), (y,dc.aap.SomeClass_84)}E:{(dc.aap.SomeClass_82,h,java.lang.Integer_75), (dc.aap.SomeClass_82,h,java.lang.Integer_77), (dc.aap.SomeClass_84,h,java.lang.Integer_75), (dc.aap.SomeClass_84,h,java.lang.Integer_77)}R:{}");
     }
 
     @Test
@@ -67,17 +67,17 @@ public class Ej2PointsToAnalysisTests extends TestCase {
 
     @Test
     public void testparameter(){
-        verify("parameter","L:{(b,param-boolean0), (temp$0,java.lang.Integer_128), (i,java.lang.Integer_128)}E:{}R:{}");
+        verify("parameter","L:{(b,param_boolean_0), (temp$0,java.lang.Integer_128), (i,java.lang.Integer_128)}E:{}R:{}");
     }
 
     @Test
     public void testparameterRead(){
-        verify("parameterRead","L:{(a,param-dc.aap.SomeClass0), (i,param-dc.aap.SomeClass0.h)}E:{}R:{(param-dc.aap.SomeClass0,h,param-dc.aap.SomeClass0.h)}");
+        verify("parameterRead","L:{(a,param_dc.aap.SomeClass_0), (i,param_dc.aap.SomeClass_0.h_-1)}E:{}R:{(param_dc.aap.SomeClass_0,h,param_dc.aap.SomeClass_0.h_-1)}");
     }
 
     @Test
     public void testParameterLoad(){
-        verify("parameterLoad","L:{(a,param-dc.aap.SomeClass0), (temp$0,java.lang.Integer_136), (i,java.lang.Integer_136)}E:{(param-dc.aap.SomeClass0,h,java.lang.Integer_136)}R:{}");
+        verify("parameterLoad","L:{(a,param_dc.aap.SomeClass_0), (temp$0,java.lang.Integer_136), (i,java.lang.Integer_136)}E:{(param_dc.aap.SomeClass_0,h,java.lang.Integer_136)}R:{}");
     }
 
     @Test

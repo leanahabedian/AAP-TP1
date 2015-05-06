@@ -1,7 +1,11 @@
 package dc.aap;
 
+import soot.Value;
 import soot.toolkits.scalar.ArraySparseSet;
 import soot.toolkits.scalar.FlowSet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ivan on 05/05/15.
@@ -18,6 +22,36 @@ public class PTL {
         E = new ArraySparseSet();
         R = new ArraySparseSet();
         W = new ArraySparseSet();
+    }
+
+    public List<Nodo> getReferencias(Value owner) {
+        List<Nodo> references = new ArrayList<Nodo>();
+        for (EjeVariable l: L) {
+            if (l.getOrigen().getNombre().equals(owner.toString())) {
+                references.add(l.getDestino());
+            }
+        }
+        return references;
+    }
+
+    public void killRelation(Value leftValue) {
+        for (EjeVariable l : L){
+            String origen = l.getOrigen().getNombre();
+            if (leftValue.toString().equals(origen)) {
+                L.remove(l);
+            }
+        }
+    }
+
+
+    public void genRelation(Value leftValue, Nodo destino) {
+        EjeVariable ejeVariable = new EjeVariable(new Variable(leftValue.toString()),destino);
+        L.add(ejeVariable);
+    }
+
+    public void genParamRelation(Value leftValue, Nodo destino) {
+        EjeVariable ejeVariable = new EjeVariable(new Variable(leftValue.toString()),destino);
+        R.add(ejeVariable);
     }
 
     public FlowSet<EjeVariable> getL() {
