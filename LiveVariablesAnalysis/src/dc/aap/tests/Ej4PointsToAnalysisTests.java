@@ -19,8 +19,29 @@ public class Ej4PointsToAnalysisTests extends TestCase {
     }
 
     @Test
-    public void testIntefaceInvoke() { verify("interfaceInvoke","");}
+    public void testvirtualInvokeAssign(){
+        verify("virtualInvokeAssign","L:{(temp$0,dc.aap.SomeClass_151), (a,dc.aap.SomeClass_151), (temp$1,java.lang.Integer_166), (i,java.lang.Integer_166)}E:{}");
+    }
 
+    @Test
+    public void testvirtualInvokeDestroy(){
+        verify("virtualInvokeDestroy","L:{(temp$0,dc.aap.SomeClass_156), (a,dc.aap.SomeClass_156), (temp$1,dc.aap.SomeClass_157), (b,dc.aap.SomeClass_141)}E:{}");
+    }
+
+    @Test
+    public void testvirtualassign(){
+        verify("virtualassign","L:{(temp$0,dc.aap.SomeClass_188), (temp$1,dc.aap.SomeClass_189), (b,dc.aap.SomeClass_189), (a,dc.aap.SomeClass_189)}E:{}");
+    }
+
+
+    @Test
+    public void testIntefaceInvoke() {
+        verify("interfaceInvoke","L:{(temp$0,dc.aap.Cat_171), (p,dc.aap.Cat_171), (temp$1,dc.aap.SomeClass_172), (a,dc.aap.SomeClass_9)}E:{}");}
+
+    @Test
+    public void testdualinterfaceInvoke() {
+        verify("dualinterfaceInvoke","");
+    }
 
     private void verify(String methodName, String expectedResult){
         UnitGraph method = env.getUnitGraph(methodName);

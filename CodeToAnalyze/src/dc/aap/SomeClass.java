@@ -150,7 +150,7 @@ public static void ifMethodAsignandoValor3(boolean b) {
     public void virtualInvokeAssign(){
         SomeClass a = new SomeClass();
         Integer i = a.integerCall();
-    }
+    } // L:{(a,dc.aap.SomeClass_151), (i,java.lang.Integer_166)}E:{}
 
     public void virtualInvokeDestroy(){
         SomeClass a = new SomeClass();
@@ -169,15 +169,18 @@ public static void ifMethodAsignandoValor3(boolean b) {
 
     public void interfaceInvoke() {
         Pet p = new Cat();
-        p.r();
+        SomeClass a = new SomeClass();
+        p.r(a); //L:{(p,dc.aap.Cat_171), (a,dc.aap.SomeClass_9)}E:{}
     }
 
-    public void interfaceInvoke(boolean b) {
-        Pet p = new Cat();
+    public void dualinterfaceInvoke(boolean b) {
+        Pet p = new Duck();
+        SomeClass a = new SomeClass();
+        a.h = new Integer(0);
         if (b) {
             p = new Dog();
         }
-        p.r();
+        p.r(a);
     }
 
     public void assign(SomeClass a, SomeClass b) {

@@ -6,24 +6,26 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.VirtualInvokeExpr;
 
+import java.util.List;
+
 public class DummyInvokeHandler extends InvokeHandler {
     @Override
-    public Ref dispatchMethodCall(PTL dest, InvokeExpr invokeExpr) {
+    public List<Ref> dispatchMethodCall(PTL dest, InvokeExpr invokeExpr) {
         return null;
     }
 
     @Override
-    protected Ref handleMethodCall(PTL dest, VirtualInvokeExpr invokeExpr) {
+    protected List<Ref> handleMethodCall(PTL dest, VirtualInvokeExpr invokeExpr) {
         return null;
     }
 
     @Override
-    protected Ref handleMethodCall(PTL dest, InterfaceInvokeExpr invokeExpr) {
+    protected List<Ref> handleMethodCall(PTL dest, InterfaceInvokeExpr invokeExpr) {
         return null;
     }
 
     @Override
-    protected Ref handleMethodCall(PTL dest, StaticInvokeExpr invokeExpr) {
+    protected List<Ref> handleMethodCall(PTL dest, StaticInvokeExpr invokeExpr) {
         return null;
     }
 

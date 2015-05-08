@@ -4,7 +4,9 @@ import soot.*;
 import soot.jimple.*;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,14 +16,15 @@ public class Ej4InvokeHandler extends InvokeHandler{
 
     @Override
     public void dispatchMethodCallAndAssign(PTL dest, InvokeExpr invokeExpr, Value leftValue) {
-        Ref ref = dispatchMethodCall(dest,invokeExpr);
-        if (ref == null) return; //case not supported
-        dest.killVarToRef(leftValue);
-        dest.genVarToRef(leftValue, ref);
+        List<Ref> refs = dispatchMethodCall(dest, invokeExpr);
+        for (Ref ref : refs) {
+            dest.killVarToRef(leftValue);
+            dest.genVarToRef(leftValue, ref);
+        }
     }
 
     @Override
-    public Ref dispatchMethodCall(PTL dest, InvokeExpr invokeExpr) {
+    public List<Ref> dispatchMethodCall(PTL dest, InvokeExpr invokeExpr) {
         if (invokeExpr instanceof VirtualInvokeExpr) {
              return handleMethodCall(dest,(VirtualInvokeExpr) invokeExpr);
         }
@@ -37,20 +40,22 @@ public class Ej4InvokeHandler extends InvokeHandler{
     }
 
     @Override
-    protected Ref handleMethodCall(PTL dest, VirtualInvokeExpr invokeExpr) {
+    protected List<Ref> handleMethodCall(PTL dest, VirtualInvokeExpr invokeExpr) {
         SootMethod method = invokeExpr.getMethod();
         Body body = method.retrieveActiveBody();
+        return processBody(dest, invokeExpr, body);
+    }
+
+    private List<Ref> processBody(PTL dest, InvokeExpr invokeExpr, Body body) {
         ExceptionalUnitGraph graph = new ExceptionalUnitGraph(body);
         ParamBinding binding = bindParameters(dest, invokeExpr, body);
         Ej4PointsToAnalysis pointsTo = new Ej4PointsToAnalysis(graph,binding.getInput());
         PTL subptl = pointsTo.getFlowAfter(graph.getTails().get(0));
-        dest = unbindParameters(subptl,binding,dest);
-
-        //todo falta el return
-        return null;
+        List<Ref> result = unbindParameters(subptl,binding,dest,graph.getTails().get(0));
+        return result;
     }
 
-    private PTL unbindParameters(PTL subptl, ParamBinding binding, PTL dest) {
+    private List<Ref> unbindParameters(PTL subptl, ParamBinding binding, PTL dest, Unit ret) {
 
         for (VarToRef l : subptl.getL()) {
             String origen = l.getVar().getName();
@@ -65,9 +70,14 @@ public class Ej4InvokeHandler extends InvokeHandler{
             }
         }
 
-        //Todo esto funciona?
+        //TODO: Este copy funciona bien?
         subptl.getE().copy(dest.getE());
-        return dest;
+
+        if (!ret.getUseBoxes().isEmpty()){
+            return subptl.getRefs(ret.getUseBoxes().get(0).getValue());
+        }
+
+        return new ArrayList<>(); // no refs found
     }
 
     private ParamBinding bindParameters(PTL dest, InvokeExpr invokeExpr, Body body) {
@@ -88,20 +98,22 @@ public class Ej4InvokeHandler extends InvokeHandler{
     }
 
     @Override
-    protected Ref handleMethodCall(PTL dest, InterfaceInvokeExpr invokeExpr) {
+    protected List<Ref> handleMethodCall(PTL dest, InterfaceInvokeExpr invokeExpr) {
         SootMethod method = invokeExpr.getMethod();
+        List<Ref> refs = new ArrayList<>();
 
         for (Ref ref: dest.getRefs(invokeExpr.getBaseBox().getValue())) {
             SootClass refClass = Scene.v().getSootClass(ref.getClassName());
             SootMethod implMethod = refClass.getMethod(method.getSubSignature());
             Body implMethodBody = implMethod.retrieveActiveBody();
+            refs.addAll(processBody(dest,invokeExpr,implMethodBody));
         }
 
-        return null;
+        return refs;
     }
 
     @Override
-    protected Ref handleMethodCall(PTL dest, StaticInvokeExpr invokeExpr) {
+    protected List<Ref> handleMethodCall(PTL dest, StaticInvokeExpr invokeExpr) {
         return null;
     }
 

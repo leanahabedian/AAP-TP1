@@ -5,7 +5,7 @@ package dc.aap;
  */
 public class Cat implements Pet {
     @Override
-    public void r() {
-
+    public void r(SomeClass a) {
+        a = new SomeClass();
     }
 }

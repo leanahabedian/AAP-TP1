@@ -5,5 +5,5 @@ package dc.aap;
  */
 public interface Pet {
 
-    public void r();
+    public void r(SomeClass a);
 }

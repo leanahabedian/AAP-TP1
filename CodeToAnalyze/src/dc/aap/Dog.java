@@ -2,7 +2,7 @@ package dc.aap;
 
 public class Dog implements Pet {
     @Override
-    public void r() {
-
+    public void r(SomeClass a) {
+        Integer i = a.h;
     }
 }
