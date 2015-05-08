@@ -10,9 +10,9 @@
 <fullyQualifiedTypeName name="java.lang.Integer"/>
 <fullyQualifiedTypeName name="dc.aap.SomeClass"/>
 <fullyQualifiedTypeName name="dc.aap.Tripla"/>
-<fullyQualifiedTypeName name="dc.aap.Variable"/>
-<fullyQualifiedTypeName name="dc.aap.Nodo"/>
-<fullyQualifiedTypeName name="dc.aap.EjeNodo"/>
-<fullyQualifiedTypeName name="dc.aap.EjeVariable"/>
+<fullyQualifiedTypeName name="dc.aap.Var"/>
+<fullyQualifiedTypeName name="dc.aap.Ref"/>
+<fullyQualifiedTypeName name="dc.aap.RefToRef"/>
+<fullyQualifiedTypeName name="dc.aap.VarToRef"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 </qualifiedTypeNameHistroy>

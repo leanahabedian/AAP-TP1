@@ -1,22 +1,22 @@
 package dc.aap;
 
-public class Nodo {
+public class Ref {
 
-	private String nombre;
+	private String name;
     private int lineNumber;
 
-	public Nodo(String valor,int lineNumber) {
-		this.nombre = valor;
+	public Ref(String valor, int lineNumber) {
+		this.name = valor;
         this.lineNumber = lineNumber;
 	}
 	
 	public String getClassName() {
-		return nombre;
+		return name;
 	}
 
 	@Override
 	public String toString() {
-		return nombre + "_" + lineNumber;
+		return name + "_" + lineNumber;
 	}
 
     @Override
@@ -24,17 +24,17 @@ public class Nodo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Nodo nodo = (Nodo) o;
+        Ref ref = (Ref) o;
 
-        if (lineNumber != nodo.lineNumber) return false;
-        if (!nombre.equals(nodo.nombre)) return false;
+        if (lineNumber != ref.lineNumber) return false;
+        if (!name.equals(ref.name)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = nombre.hashCode();
+        int result = name.hashCode();
         result = 31 * result + lineNumber;
         return result;
     }

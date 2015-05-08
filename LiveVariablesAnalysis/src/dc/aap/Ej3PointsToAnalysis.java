@@ -1,6 +1,5 @@
 package dc.aap;
 
-import soot.jimple.InvokeExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.toolkits.graph.DirectedGraph;
 
@@ -13,8 +12,8 @@ public class Ej3PointsToAnalysis extends Ej1PointsToAnalysis {
         super(g);
     }
 
-    @Override
-    protected Nodo handleMethodCall(PTL dest, VirtualInvokeExpr invoke) {
+//    @Override
+//    protected Ref handleMethodCall(PTL dest, VirtualInvokeExpr invoke) {
 //        List<Unit> oldSuccs = this.graph.getSuccsOf(invoke);
 //        Body targetBody = invoke.getInvokeExpr().getMethod().retrieveActiveBody();
 //        ExceptionalUnitGraph targetGraph = new ExceptionalUnitGraph(targetBody);
@@ -30,7 +29,7 @@ public class Ej3PointsToAnalysis extends Ej1PointsToAnalysis {
 //        this.graph.getSuccsOf(invoke).clear();
 //        this.graph.getSuccsOf(invoke).addAll(targetGraph.getHeads());
 //        invoke.getInvokeExpr().getArgs();
-        return null;
-    }
+//        return null;
+//    }
 
 }

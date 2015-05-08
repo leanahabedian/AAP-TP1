@@ -1,7 +1,6 @@
 package dc.aap;
 
 import soot.Value;
-import soot.jimple.InvokeExpr;
 import soot.jimple.ParameterRef;
 import soot.jimple.VirtualInvokeExpr;
 import soot.toolkits.graph.DirectedGraph;
@@ -14,18 +13,4 @@ public class Ej1PointsToAnalysis extends PointsToGraphAnalysis {
         super(g);
     }
 
-    @Override
-    protected Nodo handleMethodCall(PTL dest, VirtualInvokeExpr invokeExpr) {
-        dest.getW().add(invokeExpr); return null;
-    }
-
-    @Override
-    protected void handleParameterDefinition(PTL dest, Value leftValue, ParameterRef rightValue) {
-
-    }
-
-    @Override
-    protected void handleParameterFresh(PTL dest, Value leftValue, String label, EjeVariable l) {
-
-    }
 }

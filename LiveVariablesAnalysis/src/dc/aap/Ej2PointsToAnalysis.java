@@ -5,32 +5,30 @@ import soot.jimple.ParameterRef;
 import soot.jimple.VirtualInvokeExpr;
 import soot.toolkits.graph.DirectedGraph;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by ivan on 05/05/15.
  */
 public class Ej2PointsToAnalysis extends PointsToGraphAnalysis {
     public Ej2PointsToAnalysis(DirectedGraph g) {
-        super(g);
-    }
+        super(g, new ParameterHandler() {
+            List<Value> definedParams = new ArrayList<Value>();
 
-    @Override
-    protected Nodo handleMethodCall(PTL dest, VirtualInvokeExpr invokeExpr) {
-        dest.getW().add(invokeExpr);
-        return null;
-    }
+            @Override
+            public void handleParameterFresh(PTL dest, Value x, Value a, String field) { //x = a.f
+                if (definedParams.contains(a) && dest.getRefsToRef(a,field).isEmpty()){
+                    dest.genFresh(x,a,field);
+                }
+            }
 
-    @Override
-    protected void handleParameterDefinition(PTL dest, Value leftValue, ParameterRef rightValue) {
-        ParameterRef param = rightValue;
-        dest.genParamRelation(leftValue, new Nodo("param_" + param.getType().toString(),param.getIndex()));
-    }
-
-    @Override
-    protected void handleParameterFresh(PTL dest, Value leftValue, String label, EjeVariable l) {
-        if (l.getDestino().getClassName().startsWith("param_")) { // load from parameter, new node needed for the label
-            Nodo fresh = new Nodo(l.getDestino().toString() + "." + label,-1);
-            dest.genRelation(leftValue, fresh);
-            dest.getR().add(new EjeNodo(l.getDestino(), label, fresh));
-        }
+            @Override
+            public void handleParameterDefinition(PTL dest, Value leftValue, ParameterRef rightValue) {
+                ParameterRef param = rightValue;
+                dest.genParamRelation(leftValue, new Ref("param_" + param.getType().toString(), param.getIndex()));
+                definedParams.add(leftValue);
+            }
+        });
     }
 }

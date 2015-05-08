@@ -23,9 +23,9 @@ public class Ej4PointsToAnalysisTests extends TestCase {
 
 
     private void verify(String methodName, String expectedResult){
-        UnitGraph easyMethod = env.getUnitGraph(methodName);
-        PointsToGraphAnalysis pointsTo = new Ej4PointsToAnalysis(easyMethod);
-        assertEquals(expectedResult,getResult(easyMethod,pointsTo));
+        UnitGraph method = env.getUnitGraph(methodName);
+        PointsToGraphAnalysis pointsTo = new Ej4PointsToAnalysis(method);
+        assertEquals(expectedResult,getResult(method,pointsTo));
     }
 
     private String getResult(UnitGraph easyMethod, PointsToGraphAnalysis pointsTo) {

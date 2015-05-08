@@ -143,7 +143,7 @@ public static void ifMethodAsignandoValor3(boolean b) {
 
     public void virtualInvoke(){
         SomeClass a = new SomeClass();
-        Integer i = new Integer(10);
+        Integer i = new Integer(7);
         a.parameter(true,i); //L:{(a,dc.aap.SomeClass_145),(i,java.lang.Integer_128)}E:{}
     }
 
@@ -155,7 +155,7 @@ public static void ifMethodAsignandoValor3(boolean b) {
     public void virtualInvokeDestroy(){
         SomeClass a = new SomeClass();
         SomeClass b = new SomeClass();
-        a.parameterRef(b); //a = b
+        a.parameterRef(b); //(a, SomeClass_156) (b, SomeClass_141)
     }
 
     public void thisVirtualInvoke(){
@@ -170,6 +170,24 @@ public static void ifMethodAsignandoValor3(boolean b) {
     public void interfaceInvoke() {
         Pet p = new Cat();
         p.r();
+    }
+
+    public void interfaceInvoke(boolean b) {
+        Pet p = new Cat();
+        if (b) {
+            p = new Dog();
+        }
+        p.r();
+    }
+
+    public void assign(SomeClass a, SomeClass b) {
+        a = b;
+    }
+
+    public void virtualassign(){
+        SomeClass a = new SomeClass();
+        SomeClass b = new SomeClass();
+        a.assign(a, b);
     }
 
 }
