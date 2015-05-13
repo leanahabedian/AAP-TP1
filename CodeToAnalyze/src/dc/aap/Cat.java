@@ -8,4 +8,8 @@ public class Cat implements Pet {
     public void r(SomeClass a) {
         a = new SomeClass();
     }
+
+    public static Integer staticCatCall(){
+        return new Integer(10);
+    }
 }

@@ -30,7 +30,7 @@ public class Ej4PointsToAnalysisTests extends TestCase {
 
     @Test
     public void testvirtualassign(){
-        verify("virtualassign","L:{(temp$0,dc.aap.SomeClass_188), (temp$1,dc.aap.SomeClass_189), (b,dc.aap.SomeClass_189), (a,dc.aap.SomeClass_189)}E:{}");
+        verify("virtualassign","L:{(temp$0,dc.aap.SomeClass_191), (temp$1,dc.aap.SomeClass_192), (b,dc.aap.SomeClass_192), (a,dc.aap.SomeClass_192)}E:{}");
     }
 
 
@@ -40,7 +40,12 @@ public class Ej4PointsToAnalysisTests extends TestCase {
 
     @Test
     public void testdualinterfaceInvoke() {
-        verify("dualinterfaceInvoke","");
+        verify("dualinterfaceInvoke","L:{(temp$0,dc.aap.Duck_177), (p,dc.aap.Duck_177), (temp$1,dc.aap.SomeClass_178), (p,dc.aap.Dog_181), (temp$2,java.lang.Integer_179), (temp$3,dc.aap.Dog_181), (a,dc.aap.SomeClass_178)}E:{(dc.aap.SomeClass_178,h,java.lang.Integer_179), (dc.aap.SomeClass_178,h,java.lang.Integer_9)}");
+    }
+
+    @Test
+    public void teststaticCall(){
+        verify("staticCall","L:{(temp$0,java.lang.Integer_12), (i,java.lang.Integer_12)}E:{}");
     }
 
     private void verify(String methodName, String expectedResult){

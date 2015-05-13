@@ -13,6 +13,7 @@ import soot.toolkits.scalar.*;
 
 public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL>
 {
+    private SootMethod method;
     private InvokeHandler invokeHandler = new DummyInvokeHandler();
     private ParameterHandler parameterHandler = new DummyParameterHandler();
     private PTL initial = new PTL();
@@ -33,6 +34,7 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
     public PointsToGraphAnalysis(DirectedGraph g, PTL initial, InvokeHandler invokeHandler)
     {
         super(g);
+        this.method = ((ExceptionalUnitGraph) graph).getBody().getMethod();
         this.initial = initial;
         this.invokeHandler = invokeHandler;
         doAnalysis();
@@ -83,7 +85,7 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
             }
         }
         if (isMethodCall(unit)){
-            invokeHandler.dispatchMethodCall(dest, ((InvokeStmt) unit).getInvokeExpr());
+            invokeHandler.dispatchMethodCall(this.method,dest, ((InvokeStmt) unit).getInvokeExpr());
         }
 
     }
@@ -129,7 +131,7 @@ public abstract class PointsToGraphAnalysis extends ForwardFlowAnalysis<Unit,PTL
             parameterHandler.handleParameterDefinition(dest, leftValue, (ParameterRef) rightValue);
         }
         else if (isMethodCall(rightValue)){
-            invokeHandler.dispatchMethodCallAndAssign(dest, (InvokeExpr) rightValue, leftValue);
+            invokeHandler.dispatchMethodCallAndAssign(this.method,dest, (InvokeExpr) rightValue, leftValue);
         }
     }
 

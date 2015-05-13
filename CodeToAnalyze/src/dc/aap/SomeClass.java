@@ -193,4 +193,8 @@ public static void ifMethodAsignandoValor3(boolean b) {
         a.assign(a, b);
     }
 
+    public void staticCall(){
+        Integer i = Cat.staticCatCall();
+    }
+
 }
