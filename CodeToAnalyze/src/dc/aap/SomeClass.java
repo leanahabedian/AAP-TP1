@@ -197,4 +197,17 @@ public static void ifMethodAsignandoValor3(boolean b) {
         Integer i = Cat.staticCatCall();
     }
 
+    SomeClass other;
+
+    public void doubleParameterReference(SomeClass param) {
+        SomeClass a = param.other;
+        SomeClass b = a.other;
+    }
+
+    public void parameterAlias(SomeClass param) {
+        SomeClass alias = param;
+        SomeClass a = alias.other;
+        SomeClass b = a.other;
+    }
+
 }

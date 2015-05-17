@@ -18,8 +18,22 @@ public class Ej2PointsToAnalysis extends PointsToGraphAnalysis {
 
             @Override
             public void handleParameterFresh(PTL dest, Value x, Value a, String field) { //x = a.f
-                if (definedParams.contains(a) && dest.getRefsToRef(a,field).isEmpty()){
+                if (definedParams.contains(a) && dest.getRefsToRef(a,field).isEmpty()){ // a is a parameter
                     dest.genFresh(x,a,field);
+                }
+                for (Ref ref : dest.getRefs(a)) {
+                    if (ref.getClassName().startsWith("param_")){ // a points to a fresh param object
+                        List<Ref> paramRefs = dest.getParamRefs(ref, field);
+                        if (paramRefs.isEmpty()) {
+                            //need a fresh parameter
+                            dest.genFresh(x,a,field);
+                        } else {
+                            //has the fresh parameter
+                            for (Ref paramRef : paramRefs) {
+                                dest.genVarToRef(x,paramRef);
+                            }
+                        }
+                    }
                 }
             }
 

@@ -12,7 +12,7 @@ public class PTL {
 
     FlowSet<VarToRef> L;
     FlowSet<RefToRef> E;
-    FlowSet R;
+    FlowSet<RefToRef> R;
     FlowSet W;
 
     public PTL(){
@@ -167,7 +167,17 @@ public class PTL {
         return refs;
     }
 
-    public void genFresh(Value x, Value a, String field) {
+    public List<Ref> getParamRefs(Ref ref, String field) {
+        List<Ref> refs = new ArrayList<>();
+        for (RefToRef refToRef : R) {
+            if (refToRef.getOrigin().equals(ref) && refToRef.getField().equals(field)){
+                refs.add(refToRef.getDestiny());
+            }
+        }
+        return refs;
+    }
+
+    public void genFresh(Value x, Value a, String field) { // x = a.f
         List<Ref> arefs = getRefs(a);
         if (!(arefs.size() == 1)) throw new RuntimeException("Case not supported");
         Ref ref = arefs.get(0);

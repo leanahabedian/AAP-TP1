@@ -83,6 +83,15 @@ public class Ej2PointsToAnalysisTests extends TestCase {
         verify("parameterRef","L:{(temp$0,dc.aap.SomeClass_141), (a,dc.aap.SomeClass_141)}E:{}R:{}");
     }
 
+    @Test
+    public void testdoubleParameterReference(){
+        verify("doubleParameterReference","L:{(param,param_dc.aap.SomeClass_0), (a,param_dc.aap.SomeClass_0.other_-1), (b,param_dc.aap.SomeClass_0.other_-1.other_-1)}E:{}R:{(param_dc.aap.SomeClass_0,other,param_dc.aap.SomeClass_0.other_-1), (param_dc.aap.SomeClass_0.other_-1,other,param_dc.aap.SomeClass_0.other_-1.other_-1)}");
+    }
+
+    @Test
+    public void testparameterAlias(){
+        verify("parameterAlias","L:{(param,param_dc.aap.SomeClass_0), (alias,param_dc.aap.SomeClass_0), (a,param_dc.aap.SomeClass_0.other_-1), (b,param_dc.aap.SomeClass_0.other_-1.other_-1)}E:{}R:{(param_dc.aap.SomeClass_0,other,param_dc.aap.SomeClass_0.other_-1), (param_dc.aap.SomeClass_0.other_-1,other,param_dc.aap.SomeClass_0.other_-1.other_-1)}");
+    }
 
     private void verify(String methodName, String expectedResult){
         UnitGraph easyMethod = env.getUnitGraph(methodName);
