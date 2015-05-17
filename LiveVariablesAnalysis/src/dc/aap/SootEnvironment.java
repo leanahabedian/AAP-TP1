@@ -15,8 +15,19 @@ public class SootEnvironment {
 
     private SootClass c;
 
+    String cp;
+
     public SootEnvironment(String clazz) {
-        String cp = "/usr/lib/jvm/jdk1.7.0_75/jre/lib/jce.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunjce_provider.jar:/home/ivan/Documents/cetis/AAP-TP1/CodeToAnalyze/src:/usr/lib/jvm/jdk1.7.0_75/jre/lib/charsets.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/localedata.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/resources.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/zipfs.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/jsse.jar:/home/lnahabedian/Desktop/workspace/CodeToAnalyze/bin/:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/java-atk-wrapper.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rt.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/dnsns.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunpkcs11.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rhino.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/icedtea-sound.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/resources.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rt.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/jsse.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/jce.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/charsets.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rhino.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/dnsns.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/icedtea-sound.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/java-atk-wrapper.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunjce_provider.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/zipfs.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunpkcs11.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/localedata.jar";
+        cp = "/usr/lib/jvm/jdk1.7.0_75/jre/lib/jce.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunjce_provider.jar:/home/ivan/Documents/cetis/AAP-TP1/CodeToAnalyze/src:/usr/lib/jvm/jdk1.7.0_75/jre/lib/charsets.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/localedata.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/resources.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/zipfs.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/jsse.jar:/home/lnahabedian/Desktop/workspace/CodeToAnalyze/bin/:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/java-atk-wrapper.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rt.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/dnsns.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunpkcs11.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rhino.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/icedtea-sound.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/resources.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rt.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/jsse.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/jce.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/charsets.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rhino.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/dnsns.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/icedtea-sound.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/java-atk-wrapper.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunjce_provider.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/zipfs.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunpkcs11.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/localedata.jar";
+        Scene.v().setSootClassPath(cp);
+        Options.v().set_keep_line_number(true);
+        Options.v().setPhaseOption("jb" , "use-original-names:true");
+        c = Scene.v().loadClassAndSupport(clazz);
+        c.setApplicationClass();
+        Scene.v().loadNecessaryClasses();
+    }
+
+    public SootEnvironment(String clazz,String cp) {
         Scene.v().setSootClassPath(cp);
         Options.v().set_keep_line_number(true);
         Options.v().setPhaseOption("jb" , "use-original-names:true");

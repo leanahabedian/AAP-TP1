@@ -6,9 +6,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import soot.toolkits.graph.UnitGraph;
 
-/**
- * Created by ivan on 05/05/15.
- */
+
 public class Ej4PointsToAnalysisTests extends TestCase {
 
     public SootEnvironment env = new SootEnvironment("dc.aap.SomeClass");

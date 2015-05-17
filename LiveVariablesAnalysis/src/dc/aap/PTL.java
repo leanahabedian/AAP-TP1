@@ -7,9 +7,7 @@ import soot.toolkits.scalar.FlowSet;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by ivan on 05/05/15.
- */
+
 public class PTL {
 
     FlowSet<VarToRef> L;
@@ -194,6 +192,15 @@ public class PTL {
         L.copy(dest.getL());
         R.copy(dest.getR());
         W.copy(dest.getW());
+    }
 
+    @Override
+    public String toString() {
+        return "PTL{" +
+                "L=" + L +
+                ", E=" + E +
+                ", R=" + R +
+                ", W=" + W +
+                '}';
     }
 }

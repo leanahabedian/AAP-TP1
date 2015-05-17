@@ -8,9 +8,7 @@ import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.scalar.ArraySparseSet;
 import soot.toolkits.scalar.FlowSet;
 
-/**
- * Created by ivan on 05/05/15.
- */
+
 public class Ej2PointsToAnalysisTests extends TestCase {
 
     public SootEnvironment env = new SootEnvironment("dc.aap.SomeClass");

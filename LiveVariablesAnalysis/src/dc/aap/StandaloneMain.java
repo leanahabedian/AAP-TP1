@@ -15,12 +15,17 @@ import soot.toolkits.scalar.FlowSet;
 public class StandaloneMain {
 
 	public static void main(String[] args) {
-        SootEnvironment sootEnvironment = new SootEnvironment("dc.aap.SomeClass");
-        UnitGraph weakUpdate = sootEnvironment.getUnitGraph("parameterLoad");
-        PointsToGraphAnalysis an = new Ej2PointsToAnalysis(weakUpdate);
+
+        String classToAnalyse = "dc.aap.SomeClass";
+        String methodToAnalyse = "parameterLoad";
+        String cp = "/usr/lib/jvm/jdk1.7.0_75/jre/lib/jce.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunjce_provider.jar:/home/ivan/Documents/cetis/AAP-TP1/CodeToAnalyze/src:/usr/lib/jvm/jdk1.7.0_75/jre/lib/charsets.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/localedata.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/resources.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/zipfs.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/jsse.jar:/home/lnahabedian/Desktop/workspace/CodeToAnalyze/bin/:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/java-atk-wrapper.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rt.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/dnsns.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunpkcs11.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rhino.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/icedtea-sound.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/resources.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rt.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/jsse.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/jce.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/charsets.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/rhino.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/dnsns.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/icedtea-sound.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/java-atk-wrapper.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunjce_provider.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/zipfs.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/sunpkcs11.jar:/usr/lib/jvm/jdk1.7.0_75/jre/lib/ext/localedata.jar";
+
+        SootEnvironment sootEnvironment = new SootEnvironment(classToAnalyse,cp);
+        UnitGraph weakUpdate = sootEnvironment.getUnitGraph(methodToAnalyse);
+        PointsToGraphAnalysis an = new Ej5PointsToAnalysis(weakUpdate);
 		for (Unit unit : weakUpdate) {
-		  FlowSet in = (FlowSet) an.getFlowBefore(unit);
-		  FlowSet out = (FlowSet) an.getFlowAfter(unit);
+		  PTL in = an.getFlowBefore(unit);
+		  PTL out = an.getFlowAfter(unit);
 		  if (unit instanceof JAssignStmt) {
               System.out.println("in: " + in.toString());
               System.out.println("code: " + unit.toString());
